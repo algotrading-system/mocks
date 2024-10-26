@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "algotrading-mocks"
+version = "0.1.0"
+description = ""
+authors = ["Jonathan Murga <murpol.20@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.2"
+uvicorn = "^0.32.0"
+strawberry-graphql = "^0.246.2"
+faker = "^30.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
