@@ -39,3 +39,8 @@ class OperationItemType:
     assetAllocation: AllocType
     extraInfo: List[ExtraInfoType]
 
+    # pydantic:
+    #  - No hay validacion con bd
+    # - Validacion de datos de entrada
+    # input.title > 100
+
