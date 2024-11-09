@@ -1,5 +1,5 @@
 # coding: utf-8
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, Numeric, String, Text, text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, Numeric, String, Text, text, TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -23,6 +23,10 @@ class Broker(Base):
     country = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+
+    order_logs = relationship('OrderLog', back_populates='broker', lazy='select')
+    account_operations = relationship("AccountOperation", back_populates="broker", lazy='select')
+    error_logs = relationship('ErrorLog', back_populates='broker')
 
 
 class Exchange(Base):
@@ -52,6 +56,15 @@ class User(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
+    accounts = relationship('Account', back_populates='user', lazy='select')
+    action_changes = relationship('ActionChange', back_populates='user', lazy='select')
+    at_groups = relationship('AtGroup', back_populates='user', lazy='select')
+    risk_profiles = relationship('RiskProfile', back_populates='user', lazy='select')
+    strategies = relationship('Strategy', back_populates='user', lazy='select')
+    strategy_allocations = relationship('StrategyAllocation', back_populates='user', lazy='select')
+    symbols = relationship('Symbol', back_populates='user', lazy='select')
+    user_risk_profiles = relationship('UserRiskProfile', back_populates='user')
+
 
 class Account(Base):
     __tablename__ = 'account'
@@ -66,10 +79,16 @@ class Account(Base):
     unrealized_pnl = Column(Float(53))
     realized_pnl = Column(Float(53))
     updated_at = Column(DateTime)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates="accounts", lazy='select')
+    account_operations = relationship("AccountOperation", back_populates="account", lazy='select')
+    account_strategy_positions = relationship("AccountStrategyPosition", back_populates="account", lazy='select')
+    account_summaries = relationship("AccountSummary", back_populates="account", lazy='select')
+    account_values = relationship("AccountValue", back_populates="account", lazy='select')
+    orders = relationship('OrderOrder', back_populates='account')
+    error_logs = relationship('ErrorLog', back_populates='account')
 
 
 class ActionChange(Base):
@@ -84,11 +103,12 @@ class ActionChange(Base):
     currency = Column(String)
     isin = Column(String)
     is_active = Column(Boolean)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='action_changes', lazy='select')
+    symbol_action_changes = relationship('SymbolActionChange', back_populates='action_change')
 
 
 class AtGroup(Base):
@@ -104,11 +124,15 @@ class AtGroup(Base):
     symbol = Column(Text)
     strategies_composition = Column(Text)
     strategy_distribution = Column(Text)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='at_groups', lazy='select')
+    order_logs = relationship('OrderLog', back_populates='at_groups', lazy='select')
+    account_operations = relationship("AccountOperation", back_populates="at_groups", lazy='select')
+    group_risk_profiles = relationship('GroupRiskProfile', back_populates='at_groups')
+    error_logs = relationship('ErrorLog', back_populates='at_groups')
 
 
 class RiskProfile(Base):
@@ -121,11 +145,14 @@ class RiskProfile(Base):
     min_score = Column(Numeric)
     max_score = Column(Numeric)
     image_url = Column(String)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='risk_profiles', lazy='select')
+    order_logs = relationship('OrderLog', back_populates='profile', lazy='select')
+    account_operations = relationship("AccountOperation", back_populates="risk_profile", lazy='select')
+    error_logs = relationship('ErrorLog', back_populates='risk_profile')
 
 
 class Strategy(Base):
@@ -134,14 +161,17 @@ class Strategy(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     is_active = Column(Boolean)
-    exchange_id = Column(Integer)
-    strategy_param_id = Column(Integer)
+    exchange_id = Column(Integer, nullable=True)
+    strategy_param_id = Column(Integer, nullable=True)
     arn_location = Column(String)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='strategies', lazy='select')
+    order_logs = relationship('OrderLog', back_populates='strategy', lazy='select')
+    account_operations = relationship("AccountOperation", back_populates="strategy", lazy='select')
+    error_logs = relationship('ErrorLog', back_populates='strategy')
 
 
 class StrategyAllocation(Base):
@@ -149,11 +179,12 @@ class StrategyAllocation(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     asset_allocation = Column(Float(53))
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='strategy_allocations', lazy='select')
+    strategy_allocations = relationship('StrategyStrategyAllocation', back_populates='strategy_allocation')
 
 
 class Symbol(Base):
@@ -168,19 +199,20 @@ class Symbol(Base):
     currency = Column(String)
     isin = Column(String)
     is_active = Column(Boolean)
-    created_by = Column(ForeignKey('user.id'))
+    created_by = Column(ForeignKey('user.id'), nullable=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    user = relationship('User')
+    user = relationship('User', back_populates='symbols', lazy='select')
+    symbol_action_changes = relationship('SymbolActionChange', back_populates='symbol')
 
 
 class AccountStrategyPosition(Base):
     __tablename__ = 'account_strategy_position'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(ForeignKey('account.id'))
-    strategy_id = Column(ForeignKey('strategy.id'))
+    account_id = Column(ForeignKey('account.id'), nullable=True)
+    strategy_id = Column(ForeignKey('strategy.id'), nullable=True)
     symbol = Column(String)
     contract_symbol = Column(Integer)
     currency = Column(String)
@@ -188,15 +220,15 @@ class AccountStrategyPosition(Base):
     average_cost = Column(String)
     additional_info = Column(String)
 
-    account = relationship('Account')
-    strategy = relationship('Strategy')
+    account = relationship('Account', back_populates='account_strategy_positions', lazy='select')
+    strategy = relationship('Strategy', lazy='select')
 
 
 class AccountSummary(Base):
     __tablename__ = 'account_summary'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(ForeignKey('account.id'))
+    account_id = Column(ForeignKey('account.id'), nullable=True)
     account_type = Column(String)
     net_liquidation = Column(Numeric)
     total_cash_value = Column(Numeric)
@@ -209,14 +241,14 @@ class AccountSummary(Base):
     full_available_funds = Column(Numeric)
     created_at = Column(DateTime)
 
-    account = relationship('Account')
+    account = relationship('Account', back_populates='account_summaries', lazy='select')
 
 
 class AccountValue(Base):
     __tablename__ = 'account_value'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(ForeignKey('account.id'))
+    account_id = Column(ForeignKey('account.id'), nullable=True)
     cash_balance = Column(Numeric)
     realized_pnl = Column(Numeric)
     unrealized_pnl = Column(Numeric)
@@ -224,29 +256,29 @@ class AccountValue(Base):
     currency = Column(String)
     created_at = Column(DateTime)
 
-    account = relationship('Account')
+    account = relationship('Account', back_populates='account_values', lazy='select')
 
 
 class GroupRiskProfile(Base):
     __tablename__ = 'group_risk_profile'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    group_id = Column(ForeignKey('at_group.id'))
-    risk_profile_id = Column(ForeignKey('risk_profile.id'))
+    group_id = Column(ForeignKey('at_group.id'), nullable=True)
+    risk_profile_id = Column(ForeignKey('risk_profile.id'), nullable=True)
 
-    group = relationship('AtGroup')
-    risk_profile = relationship('RiskProfile')
+    group = relationship('AtGroup', back_populates='group_risk_profiles', lazy='select')
+    risk_profile = relationship('RiskProfile', back_populates='group_risk_profiles', lazy='select')
 
 
 class OrderOrder(Base):
     __tablename__ = 'order_order'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(ForeignKey('account.id'))
+    account_id = Column(ForeignKey('account.id'), nullable=True)
     account_number = Column(String)
-    parent_id = Column(Integer)
-    parent_perm_id = Column(Integer)
-    perm_id = Column(Integer)
+    parent_id = Column(Integer, nullable=True)
+    parent_perm_id = Column(Integer, nullable=True)
+    perm_id = Column(Integer, nullable=True)
     exchange = Column(String)
     currency = Column(String)
     contract_id = Column(String)
@@ -264,54 +296,57 @@ class OrderOrder(Base):
     avg_fill_price = Column(Integer)
     created_at = Column(DateTime)
     update_at = Column(DateTime)
-    timestamp = Column(DateTime)
+    timestamp = Column(TIMESTAMP)
 
-    account = relationship('Account')
+    account = relationship('Account', back_populates='orders', lazy='select')
+    order_logs = relationship('OrderLog', back_populates='order', lazy='select')
+    order_fills = relationship('OrderFill', back_populates='order', lazy='select')
+    error_logs = relationship('ErrorLog', back_populates='order', lazy='select')
 
 
 class StrategyStrategyAllocation(Base):
     __tablename__ = 'strategy_strategy_allocation'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    strategy_id = Column(ForeignKey('strategy.id'))
-    strategy_allocation_id = Column(ForeignKey('strategy_allocation.id'))
+    strategy_id = Column(ForeignKey('strategy.id'), nullable=True)
+    strategy_allocation_id = Column(ForeignKey('strategy_allocation.id'), nullable=True)
 
-    strategy_allocation = relationship('StrategyAllocation')
-    strategy = relationship('Strategy')
+    strategy_allocation = relationship('StrategyAllocation', back_populates='strategy_allocations', lazy='select')
+    strategy = relationship('Strategy', back_populates='strategy_allocations', lazy='select')
 
 
 class SymbolActionChange(Base):
     __tablename__ = 'symbol_action_change'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    symbol_id = Column(ForeignKey('symbol.id'))
-    action_change_id = Column(ForeignKey('action_change.id'))
+    symbol_id = Column(ForeignKey('symbol.id'), nullable=True)
+    action_change_id = Column(ForeignKey('action_change.id'), nullable=True)
 
-    action_change = relationship('ActionChange')
-    symbol = relationship('Symbol')
+    action_change = relationship('ActionChange', back_populates='symbol_action_changes', lazy='select')
+    symbol = relationship('Symbol', back_populates='symbol_action_changes', lazy='select')
 
 
 class UserRiskProfile(Base):
     __tablename__ = 'user_risk_profile'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(ForeignKey('user.id'))
-    risk_profile_id = Column(ForeignKey('risk_profile.id'))
+    user_id = Column(ForeignKey('user.id'), nullable=True)
+    risk_profile_id = Column(ForeignKey('risk_profile.id'), nullable=True)
 
-    risk_profile = relationship('RiskProfile')
-    user = relationship('User')
+    risk_profile = relationship('RiskProfile', back_populates='user_risk_profiles', lazy='select')
+    user = relationship('User', back_populates='user_risk_profiles', lazy='select')
 
 
 class ErrorLog(Base):
     __tablename__ = 'error_log'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(ForeignKey('account.id'))
-    broker_id = Column(ForeignKey('broker.id'))
-    broker_group_id = Column(ForeignKey('at_group.id'))
-    risk_profile_id = Column(ForeignKey('risk_profile.id'))
-    strategy_id = Column(ForeignKey('strategy.id'))
-    order_id = Column(ForeignKey('order_order.id'))
+    account_id = Column(ForeignKey('account.id'), nullable=True)
+    broker_id = Column(ForeignKey('broker.id'), nullable=True)
+    broker_group_id = Column(ForeignKey('at_group.id'), nullable=True)
+    risk_profile_id = Column(ForeignKey('risk_profile.id'), nullable=True)
+    strategy_id = Column(ForeignKey('strategy.id'), nullable=True)
+    order_id = Column(ForeignKey('order_order.id'), nullable=True)
     contract_symbol = Column(String)
     error_message = Column(String)
     error_datetime = Column(DateTime)
@@ -324,45 +359,44 @@ class ErrorLog(Base):
     current_condition = Column(String)
     set_condition = Column(String)
     gap = Column(String)
-    timestamp = Column(DateTime)
+    timestamp = Column(TIMESTAMP)
 
-    account = relationship('Account')
-    broker_group = relationship('AtGroup')
-    broker = relationship('Broker')
-    order = relationship('OrderOrder')
-    risk_profile = relationship('RiskProfile')
-    strategy = relationship('Strategy')
+    account = relationship('Account', back_populates='error_logs', lazy='select')
+    broker_group = relationship('AtGroup', back_populates='error_logs', lazy='select')
+    broker = relationship('Broker', back_populates='error_logs', lazy='select')
+    order = relationship('OrderOrder', back_populates='error_logs', lazy='select')
+    risk_profile = relationship('RiskProfile', back_populates='error_logs', lazy='select')
+    strategy = relationship('Strategy', back_populates='error_logs', lazy='select')
 
 
 class OrderFill(Base):
     __tablename__ = 'order_fills'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(ForeignKey('order_order.id'))
+    order_id = Column(ForeignKey('order_order.id'), nullable=True)
     execution_id = Column(String)
     contract_id = Column(String)
     commission = Column(Float(53))
     currency = Column(String)
     released_pnl = Column(Float(53))
 
-    order = relationship('OrderOrder')
+    order = relationship('OrderOrder', back_populates='order_fills', lazy='select')
 
 
 class OrderLog(Base):
     __tablename__ = 'order_log'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # open_order = Column(Boolean, nullable=False)
-    broker_id = Column(ForeignKey('broker.id'), nullable=False)
+    broker_id = Column(ForeignKey('broker.id'), nullable=True)
     broker_name = Column(String, nullable=False)
-    profile_id = Column(ForeignKey('risk_profile.id'), nullable=False)
+    profile_id = Column(ForeignKey('risk_profile.id'), nullable=True)
     profile_name = Column(String, nullable=False)
-    group_id = Column(ForeignKey('at_group.id'), nullable=False)
+    group_id = Column(ForeignKey('at_group.id'), nullable=True)
     group_name = Column(String, nullable=False)
-    strategy_id = Column(ForeignKey('strategy.id'), nullable=False)
+    strategy_id = Column(ForeignKey('strategy.id'), nullable=True)
     strategy_name = Column(String, nullable=False)
     account_number = Column(String, nullable=False)
-    timestamp = Column(DateTime, nullable=False)
+    timestamp = Column(TIMESTAMP, nullable=False)
     contract_symbol = Column(String, nullable=False)
     contract_id = Column(Integer, nullable=False)
     action = Column(String, nullable=False)
@@ -375,8 +409,8 @@ class OrderLog(Base):
     avg_fill_price = Column(Float(53), nullable=False)
     currency = Column(String, nullable=False)
     exchange = Column(String, nullable=False)
-    order_id = Column(ForeignKey('order_order.id'), nullable=False)
-    order_parent_id = Column(ForeignKey('order_order.id'))
+    order_id = Column(ForeignKey('order_order.id'), nullable=True)
+    order_parent_id = Column(ForeignKey('order_order.id'), nullable=True)
     perm_id = Column(Integer, nullable=False)
     parent_perm_id = Column(Integer)
     total_commissions = Column(Float(53), nullable=False)
@@ -386,24 +420,70 @@ class OrderLog(Base):
     created_at = Column(DateTime, nullable=False)
     is_open_position = Column(Boolean)
     direction_trade = Column(String)
-    # direction_long = Column(String, nullable=False)
-    # direction_short = Column(String, nullable=False)
 
-    broker = relationship('Broker')
-    group = relationship('AtGroup')
-    order = relationship('OrderOrder')
-    profile = relationship('RiskProfile')
-    strategy = relationship('Strategy')
+    broker = relationship('Broker', back_populates='order_logs')
+    group = relationship('AtGroup', back_populates='order_logs')
+    order = relationship('OrderOrder', back_populates='order_logs')
+    profile = relationship('RiskProfile', back_populates='order_logs')
+    strategy = relationship('Strategy', back_populates='order_logs')
 
 
 class Signal(Base):
     __tablename__ = 'signals'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(ForeignKey('order_order.id'))
+    order_id = Column(ForeignKey('order_order.id'), nullable=True)
     symbol = Column(String)
     signal_type = Column(String)
     strategy = Column(String)
-    timestamp = Column(DateTime)
+    timestamp = Column(TIMESTAMP)
 
-    order = relationship('OrderOrder')
+    order = relationship('OrderOrder', back_populates='signal')
+
+
+class AccountOperation(Base):
+    __tablename__ = 'account_operation'
+
+    id = Column(Integer, primary_key=True)
+    account_id = Column(Integer, ForeignKey('account.id'), nullable=True)  # Clave foránea opcional
+    broker_id = Column(Integer, ForeignKey('broker.id'), nullable=True)
+    broker_name = Column(String)
+    broker_acculated_pnl_amount = Column(Float)
+    broker_acculated_pnl_percentage = Column(Integer)
+    broker_acculated_pnl_currency = Column(String)
+    broker_acculated_in_amount = Column(Integer)
+    broker_currency = Column(String)
+    broker_asset_allocation_percentage = Column(Integer)
+    risk_profile_id = Column(Integer, ForeignKey('risk_profile.id'), nullable=True)
+    risk_profile_name = Column(String)
+    risk_profile_acculated_pnl_amount = Column(Float)
+    risk_profile_acculated_pnl_percentage = Column(Integer)
+    risk_profile_acculated_pnl_currency = Column(String)
+    risk_profile_acculated_in_amount = Column(Integer)
+    risk_profile_currency = Column(String)
+    risk_profile_asset_allocation_percentage = Column(Integer)
+    group_id = Column(Integer, ForeignKey('at_group.id'), nullable=True)
+    group_name = Column(String)
+    group_acculated_pnl_amount = Column(Float)
+    group_acculated_pnl_percentage = Column(Integer)
+    group_acculated_pnl_currency = Column(String)
+    group_acculated_in_amount = Column(Integer)
+    group_currency = Column(String)
+    group_asset_allocation_percentage = Column(Integer)
+    strategy_id = Column(Integer, ForeignKey('strategy.id'), nullable=True)
+    strategy_name = Column(String)
+    strategy_acculated_pnl_amount = Column(Float)
+    strategy_acculated_pnl_percentage = Column(Integer)
+    strategy_acculated_pnl_currency = Column(String)
+    strategy_acculated_in_amount = Column(Integer)
+    strategy_currency = Column(String)
+    strategy_asset_allocation_percentage = Column(Integer)
+    created_at = Column(DateTime)
+    timestamp = Column(TIMESTAMP)
+
+    account = relationship("Account", back_populates="account_operations", lazy='select')
+    broker = relationship("Broker", back_populates="account_operations", lazy='select')
+    risk_profile = relationship("RiskProfile", back_populates="account_operations", lazy='select')
+    group = relationship("AtGroup", back_populates="account_operations", lazy='select')
+    strategy = relationship("Strategy", back_populates="account_operations", lazy='select')
+
