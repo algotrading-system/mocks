@@ -20,9 +20,10 @@ class Trade:
     entry: datetime
     price: float
     market: float
-    target: float
-    stop: float
-    exit: Optional[datetime]
-    exit_price: Optional[float]
-    pnl: float
-    lag_time: float  # Time delay in seconds
+    target: Optional[float] = None
+    stop: Optional[float] = None
+    exit: Optional[datetime] = None
+    exit_price: Optional[float] = None
+    pnl: Optional[float] = None
+    lag_time: Optional[float] = None
+    bg_color: Optional[str] = None

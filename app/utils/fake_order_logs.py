@@ -30,3 +30,31 @@ def generate_fake_trades() -> List[Trade]:
         )
         trades.append(trade)
     return trades
+
+
+def get_trade_data(is_open: bool) -> List[Trade]:
+    trades = []
+    exit_bool = True if is_open else None
+    for item in range(10):
+        trade = Trade(
+            broker="IBKR",
+            profile="Agresivo",
+            group="Algotrading",
+            strategy="AT-30M-AH V3.1",
+            account="U131229",
+            symbol="SOXL",
+            direction="BUY" if is_open else "SRT",
+            quantity=100,
+            entry=fake.date_time_this_year(),
+            price=2173.50,
+            market=2173.50,
+            target=2173.50,
+            stop=2173.50,
+            exit=fake.date_time_this_year() if exit_bool is True else None,
+            exit_price=2173.50,
+            pnl=-555.5,
+            lag_time=300,  # delay in seconds,
+            bg_color="red" if item == 8 else "green"
+        )
+        trades.append(trade)
+    return trades

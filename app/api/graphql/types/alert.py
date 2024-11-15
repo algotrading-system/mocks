@@ -16,6 +16,7 @@ class IETFAlertDetailType:
 class IETFAlertType:
     etf: str
     qty: str
+    currency: str
     value: str
     position: str
     percentage: str
@@ -24,7 +25,8 @@ class IETFAlertType:
 
 @strawberry.type
 class IStrategyAlertType:
-    name: str
+    name: str = strawberry.field(description="El nombre de la estrategia.")
+    currency: str = strawberry.field(description="Moneda.")
     value: str
     percentage: str
     children: List[IETFAlertType]
@@ -33,6 +35,7 @@ class IStrategyAlertType:
 @strawberry.type
 class IGroupAlertType:
     name: str
+    currency: str
     value: str
     percentage: str
     children: List[IStrategyAlertType]
@@ -41,6 +44,7 @@ class IGroupAlertType:
 @strawberry.type
 class IProfileAlertType:
     name: str
+    currency: str
     value: str
     percentage: str
     children: List[IGroupAlertType]
@@ -49,6 +53,7 @@ class IProfileAlertType:
 @strawberry.type
 class IBrokerAlertType:
     name: str
+    currency: str
     value: str
     percentage: str
     children: List[IProfileAlertType]

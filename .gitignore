@@ -1,0 +1,98 @@
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+__pycache__/
+
+# Cython debug symbols
+cython_debug/
+
+# Distribution / packaging
+.Python
+*.egg
+*.egg-info/
+.installed.cfg
+MANIFEST
+build/
+develop-eggs/
+dist/
+
+# Django stuff
+*.log
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+
+# Environments
+.env
+.env.*
+env/
+env.bak/
+venv/
+venv.bak/
+
+# Flask/Django caches
+.webassets-cache/
+instance/
+
+# IPython and Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Installer logs
+pip-delete-this-directory.txt
+pip-log.txt
+
+# macOS files
+.DS_Store
+
+# mypy
+.dmypy.json
+.mypy_cache/
+dmypy.json
+
+# Other files
+*.~
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Pylint reports
+pylint.log
+
+# PyCharm
+.idea/
+
+# pyenv
+.python-version
+
+# Scrapy stuff
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# Unit test / coverage reports
+.cache
+.coverage
+.coverage.*
+.hypothesis/
+.nox/
+.pytest_cache/
+.tox/
+coverage.xml
+htmlcov/
+nosetests.xml
+*.cover
+*.py,cover
+
+# VS Code
+.vscode/
+
+# Windows files
+$RECYCLE.BIN/
+Desktop.ini
+Thumbs.db
+ehthumbs.db

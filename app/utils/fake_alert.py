@@ -10,46 +10,51 @@ fake = Faker()
 # Generador de datos simulados
 def generate_fake_broker_alert() -> IBrokerAlertType:
     return IBrokerAlertType(
-        name=fake.company(),
-        value=f"{fake.random_number(digits=5)} USD",
+        name="IBKR",
+        currency="USD",
+        value=f"{fake.random_number(digits=5)}",
         percentage=f"{fake.random_int(min=0, max=100)}%",
         children=[
             IProfileAlertType(
-                name=fake.name(),
-                value=f"{fake.random_number(digits=5)} USD",
+                name="Conservador",
+                currency="USD",
+                value=f"{fake.random_number(digits=5)}",
                 percentage=f"{fake.random_int(min=0, max=100)}%",
                 children=[
                     IGroupAlertType(
-                        name=fake.job(),
-                        value=f"{fake.random_number(digits=5)} USD",
+                        name="Cryptolovers",
+                        currency="USD",
+                        value=f"{fake.random_number(digits=5)}",
                         percentage=f"{fake.random_int(min=0, max=100)}%",
                         children=[
                             IStrategyAlertType(
-                                name=fake.catch_phrase(),
-                                value=f"{fake.random_number(digits=5)} USD",
+                                name="AT-30M-AH v3.1",
+                                currency="USD",
+                                value=f"{fake.random_number(digits=5)}",
                                 percentage=f"{fake.random_int(min=0, max=100)}%",
                                 children=[
                                     IETFAlertType(
-                                        etf=fake.bs(),
-                                        qty=f"{fake.random_int(min=1, max=100)}",
-                                        value=f"{fake.random_number(digits=5)} USD",
-                                        position="IN" if fake.boolean() else "OUT",
+                                        etf="SOXL",
+                                        qty=f"{fake.random_int(min=1, max=1000)}",
+                                        currency="USD",
+                                        value=f"{fake.random_number(digits=5)}",
+                                        position="OUT" if fake.boolean() else "IN",
                                         percentage=f"{fake.random_int(min=0, max=100)}%",
                                         details=[
                                             IETFAlertDetailType(
                                                 failReason="STOP LOSS",  # Puedes agregar más razones
-                                                current=f"{fake.random_number(digits=4)} USD",
-                                                stablished=f"{fake.random_number(digits=4)} USD",
-                                                difference=f"{fake.random_number(digits=3)} USD"
+                                                current=f"{fake.random_number(digits=3)} %",
+                                                stablished=f"Max. {fake.random_number(digits=3)} %",
+                                                difference=f"{fake.random_number(digits=2)} %"
                                             )
                                         ]
-                                    ) for _ in range(2)
+                                    ) for _ in range(1)
                                 ]
-                            ) for _ in range(2)
+                            ) for _ in range(1)
                         ]
-                    ) for _ in range(2)
+                    ) for _ in range(1)
                 ]
-            ) for _ in range(2)
+            ) for _ in range(1)
         ]
     )
 
