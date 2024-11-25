@@ -3,6 +3,8 @@ from typing import List, Optional
 
 import strawberry
 
+from app.api.graphql.inputs import UpdateOperationInput, UpdateOperationResponse, UpdateOperationPayload, \
+    MutationResponseError, ClosePositionInput, ClosePositionResponse, ClosePositionPayload
 from app.api.graphql.types.alert import IBrokerAlertType
 from app.api.graphql.types.health_check import IHealthCheckType
 from app.api.graphql.types.operation import OperationItemType, DescriptionType, DailyPNLType, AllocType, ExtraInfoType, \
@@ -52,7 +54,7 @@ class Query:
         return generate_fake_broker_alert()
 
     @strawberry.field
-    def health_check(self, account_id: int) -> list[IHealthCheckType]:
+    def health_check(self, account_id: Optional[int] = None) -> list[IHealthCheckType]:
         return generate_fake_health_check()
 
     @strawberry.field
@@ -66,32 +68,33 @@ class Query:
     ) -> Optional[AccountOperationType]:
         item_data = generate_fake_account_operation(item_id, operation_type, is_fake)
         return item_data
-        # return OperationItemType(
-        #     id=item_data.id,
-        #     title=item_data.title,
-        #     switched=item_data.switched,
-        #     description=DescriptionType(
-        #         title=item_data.description.title,
-        #         price=item_data.description.price
-        #     ),
-        #     dailyPNL=DailyPNLType(
-        #         title=item_data.dailyPNL.title,
-        #         price=item_data.dailyPNL.price,
-        #         percentage=item_data.dailyPNL.percentage
-        #     ),
-        #     assetAllocation=AllocType(
-        #         title=item_data.assetAllocation.title,
-        #         percentage=item_data.assetAllocation.percentage
-        #     ),
-        #     extraInfo=[
-        #         ExtraInfoType(
-        #             userAlias=info.userAlias,
-        #             amount=info.amount,
-        #             switched=info.switched
-        #         )
-        #         for info in item_data.extraInfo
-        #     ]
-        # )
+
+
+@strawberry.type
+class Mutation:
+    @strawberry.field
+    def update_operation(self, input: UpdateOperationInput) -> UpdateOperationResponse:
+        try:
+            payload = {"success": True}
+            return UpdateOperationPayload(**payload)
+        except Exception as exp:
+            return MutationResponseError(
+                message=f"{exp}"
+            )
+
+    @strawberry.field
+    def close_positions(self, input: ClosePositionInput) -> ClosePositionResponse:
+        try:
+            payload = {"success": True}
+            return ClosePositionPayload(**payload)
+        except Exception as exp:
+            return MutationResponseError(
+                message=f"{exp}"
+            )
+
 
 # Generamos el esquema GraphQL
-schema = strawberry.Schema(query=Query)
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation
+)

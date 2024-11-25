@@ -3,6 +3,16 @@ import strawberry
 
 
 @strawberry.enum
+class LevelTypeEnum(Enum):
+    LEVEL_ETF = 'LEVEL_ETF'
+    LEVEL_STRATEGY = 'LEVEL_STRATEGY'
+    LEVEL_GROUP = 'LEVEL_GROUP'
+    LEVEL_PROFILE = 'LEVEL_PROFILE'
+    LEVEL_BROKER = 'LEVEL_BROKER'
+    LEVEL_ASSET_MANAGER = 'LEVEL_ASSET_MANAGER'
+
+
+@strawberry.enum
 class HealthCheckTypeEnum(Enum):
     OK = 'OK'
     WARNING = 'WARNING'
