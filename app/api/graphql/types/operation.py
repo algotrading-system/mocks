@@ -54,6 +54,7 @@ class PNLInfo:
     acculated_in_amount: int = strawberry.field(description="Total In.")
     currency: str = strawberry.field(description="Moneda de Total In.")
     asset_allocation_percentage: str = strawberry.field(description="A. Allocation")
+    flag_out: bool = strawberry.field(description="On/Off")
 
 
 @strawberry.type

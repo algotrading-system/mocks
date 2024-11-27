@@ -59,7 +59,8 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
             acculated_pnl_currency="$",
             acculated_in_amount=1000100,
             currency="$",
-            asset_allocation_percentage=100
+            asset_allocation_percentage=100,
+            flag_out=True
         )
 
     def generate_profile() -> PNLInfo:
@@ -72,7 +73,8 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
             acculated_pnl_currency="$",
             acculated_in_amount=1000100,
             currency="$",
-            asset_allocation_percentage=100
+            asset_allocation_percentage=100,
+            flag_out=True
         )
 
     def generate_group() -> PNLInfo:
@@ -85,7 +87,8 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
             acculated_pnl_currency="$",
             acculated_in_amount=1000100,
             currency="$",
-            asset_allocation_percentage=100
+            asset_allocation_percentage=100,
+            flag_out=True
         )
 
     def generate_strategy() -> PNLInfo:
@@ -98,7 +101,8 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
             acculated_pnl_currency="$",
             acculated_in_amount=1000100,
             currency="$",
-            asset_allocation_percentage=100
+            asset_allocation_percentage=100,
+            flag_out=True
         )
 
     return AccountOperationType(
