@@ -47,6 +47,7 @@ class OperationItemType:
 
 @strawberry.type
 class PNLInfo:
+    id: int = strawberry.field(description="ID de la operacion.")
     name: str = strawberry.field(description="Nombre de la operacion.")
     acculated_pnl_amount: float = strawberry.field(description="Daily PNL.")
     acculated_pnl_percentage: int = strawberry.field(description="Porcentaje de la Daily PNL.")

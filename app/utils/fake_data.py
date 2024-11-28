@@ -53,6 +53,7 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
         name = "IBKR"
 
         return PNLInfo(
+            id=1,
             name=name,
             acculated_pnl_amount=acculated_pnl_amount,
             acculated_pnl_percentage=acculated_pnl_percentage,
@@ -67,6 +68,7 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
         name = "Agresivo"
 
         return PNLInfo(
+            id=11,
             name=name,
             acculated_pnl_amount=acculated_pnl_amount,
             acculated_pnl_percentage=acculated_pnl_percentage,
@@ -81,6 +83,7 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
         name = "Algotrading"
 
         return PNLInfo(
+            id=111,
             name=name,
             acculated_pnl_amount=acculated_pnl_amount,
             acculated_pnl_percentage=acculated_pnl_percentage,
@@ -95,6 +98,7 @@ def generate_fake_account_operation(item_id: int, operation_type: str, is_fake: 
         name = "AT-30M-AH v2.1"
 
         return PNLInfo(
+            id=fake.random_number(digits=4),
             name=name,
             acculated_pnl_amount=acculated_pnl_amount,
             acculated_pnl_percentage=acculated_pnl_percentage,
